@@ -19,7 +19,7 @@ from gameboard import GameBoard
 c = ApiClient(config.api_host)
 
 action_completer = WordCompleter([
-    'attack ', 'move ', 'pickup '
+    'attack ', 'move ', 'pickup ', 'use '
 ], ignore_case=True)
 
 # 3. Create the buffers
@@ -243,6 +243,12 @@ def board_view():
 
 
 def player_view():
+    powerup_types = {
+        0: "health",
+        1: "teleport",
+        2: "doubledmg"
+    }
+
     while True:
         player = c.post('player/status', {
             "game_id": config.gameid,
@@ -257,6 +263,8 @@ def player_view():
         player_buffer.text += f'actions: {player["action_count"]}\n'
         if player["powerups"] is not None:
             player_buffer.text += f'powerups: {len(player["powerups"])}\n'
+            for powerup in player["powerups"]:
+                player_buffer.text += f' ! powerup {powerup_types[powerup["type"]]} -> {powerup["id"]}\n'
 
         player_buffer.text += f'game name: {game["name"]}\n'
         player_buffer.text += f'game created: {game["created"]}\n'
@@ -357,6 +365,20 @@ def parse_command():
                 "player_id": config.playerid
             },
             "x": target_x, "y": target_y,
+        })
+
+        if 'success' not in r:
+            log_buffer.text += str(r)
+
+    if what in 'use':
+        powerup_id = cmd.split(' ')[1]
+        # post use command
+        r = c.post('action/use', {
+            "game_player_id": {
+                "game_id": config.gameid,
+                "player_id": config.playerid
+            },
+            "powerup_id": powerup_id,
         })
 
         if 'success' not in r:
