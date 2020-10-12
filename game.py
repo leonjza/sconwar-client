@@ -3,9 +3,10 @@ import asyncio
 import time
 
 from prompt_toolkit.application import Application
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.buffer import Buffer
+from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.key_binding import KeyBindings
-from prompt_toolkit.key_binding.bindings.focus import focus_next, focus_previous
 from prompt_toolkit.layout.containers import HSplit, VSplit, Window, WindowAlign
 from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
 from prompt_toolkit.layout.layout import Layout
@@ -17,13 +18,20 @@ from gameboard import GameBoard
 
 c = ApiClient(config.api_host)
 
+action_completer = WordCompleter([
+    'attack ', 'move ', 'pickup '
+], ignore_case=True)
+
 # 3. Create the buffers
 #    ------------------
 
 board_buffer = Buffer()
 player_buffer = Buffer()
 log_buffer = Buffer()
-action_buffer = Buffer()
+action_buffer = Buffer(name="action",
+                       multiline=False, completer=action_completer,
+                       auto_suggest=AutoSuggestFromHistory(),
+                       enable_history_search=True)
 
 # 1. First we create the layout
 #    --------------------------
@@ -61,6 +69,17 @@ body = VSplit(
     ]
 )
 
+# default buffer texts
+board_buffer_text = "press ctrl+r to start"
+log_buffer_text = "press ctrl+r to start"
+action_buffer_text = "commands: (m)ove, (a)ttack, (p)ickup <direction / x,y>"
+
+board_buffer.text = board_buffer_text
+log_buffer.text = log_buffer_text
+action_buffer.text = action_buffer_text
+
+
+# helpers to call functions in the background
 
 def call_in_background(target, *, loop=None, executor=None):
     """Schedules and starts target callable as a background task
@@ -119,8 +138,9 @@ root_container = HSplit(
 
 kb = KeyBindings()
 
-kb.add("tab")(focus_next)
-kb.add("s-tab")(focus_previous)
+
+# kb.add("tab")(focus_next)
+# kb.add("s-tab")(focus_previous)
 
 
 # Now add the Ctrl-Q binding. We have to pass `eager=True` here. The reason is
@@ -257,7 +277,7 @@ def game_events():
 
         log_buffer.text = ""
 
-        sorted_events = sorted(events["events"], key=lambda i: i["ID"], reverse=True)
+        sorted_events = sorted(events["events"], key=lambda i: i["ID"], reverse=True)[:500]
         for e in sorted_events:
             d1 = e["date_created"].split("-")
             d = d1[2].split("+")[0]
@@ -293,7 +313,11 @@ def parse_command():
 
         return int(x), int(y)
 
-    cmd = action_buffer.text
+    cmd = action_buffer.text.strip()
+
+    if len(cmd) == 0 or len(cmd.split()) < 2:
+        return
+
     what = cmd.split(' ')[0]
 
     if what in 'move':
