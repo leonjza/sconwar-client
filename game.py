@@ -257,10 +257,8 @@ def player_view():
 
         game = c.get(f'game/info/{config.gameid}')
 
-        player_buffer.text = f'name: {player["name"]}\n'
-        player_buffer.text += f'health: {player["health"]}\n'
-        player_buffer.text += f'position: x={player["position"]["x"]},y={player["position"]["y"]}\n'
-        player_buffer.text += f'actions: {player["action_count"]}\n'
+        player_buffer.text = f'{player["name"]} health: ({player["health"]}/100)\n'
+        player_buffer.text += f'actions: {player["action_count"]}/2 position: x={player["position"]["x"]},y={player["position"]["y"]}\n'
 
         if player["buffs"] is not None:
             player_buffer.text += f'buffs: {len(player["buffs"])} '
@@ -274,8 +272,9 @@ def player_view():
                 player_buffer.text += f' ! powerup {powerup_types[powerup["type"]]} -> {powerup["id"]}\n'
 
         player_buffer.text += f'game name: {game["name"]}\n'
-        player_buffer.text += f'game created: {game["created"]}\n'
-        player_buffer.text += f'game fow: {game["fow"]}\n'
+        player_buffer.text += f'alive creep/players ' \
+                              f'{game["game_entities"]["alive_creep"]}/' \
+                              f'{game["game_entities"]["alive_players"]}\n'
         if config.playerid == game["current_player"]:
             player_buffer.text += f'game curr player: IT IS OUR ROUND!\n'
         else:
