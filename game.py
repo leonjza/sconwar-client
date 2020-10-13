@@ -272,9 +272,9 @@ def player_view():
                 player_buffer.text += f' ! powerup {powerup_types[powerup["type"]]} -> {powerup["id"]}\n'
 
         player_buffer.text += f'game name: {game["name"]}\n'
-        player_buffer.text += f'alive creep/players ' \
-                              f'{game["game_entities"]["alive_creep"]}/' \
-                              f'{game["game_entities"]["alive_players"]}\n'
+        player_buffer.text += f'alive creep={game["game_entities"]["alive_creep"]} ' \
+                              f'players={game["game_entities"]["alive_players"]} ' \
+                              f'powerups={game["game_entities"]["powerups"]}\n'
         if config.playerid == game["current_player"]:
             player_buffer.text += f'game curr player: IT IS OUR ROUND!\n'
         else:
@@ -294,7 +294,7 @@ def game_events():
         sorted_events = sorted(events["events"], key=lambda i: i["ID"], reverse=True)[:500]
         for e in sorted_events:
             d1 = e["date_created"].split("-")
-            d = d1[2].split("+")[0]
+            d = d1[2].split("+")[0].split('.')[0].split('T')[1]
             log_buffer.text += " -> ".join([d, e["msg"]]) + "\n"
         time.sleep(1)
 
