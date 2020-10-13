@@ -24,5 +24,9 @@ class ApiClient(object):
         r = requests.post(self.build_uri(uri), json=data)
         return self.to_dict(r)
 
+    def put(self, uri: str, data: dict):
+        r = requests.put(self.build_uri(uri), json=data)
+        return self.to_dict(r)
+
     def call(self, endpoint: str):
         pass

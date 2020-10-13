@@ -1,10 +1,13 @@
+import random
+import string
+
 import click
 
 from client import ApiClient
 from config import config
 from entities import Entities
-from gameboard import GameBoard
 from game import run as runapp
+from gameboard import GameBoard
 
 c = ApiClient(config.api_host)
 
@@ -142,9 +145,25 @@ def player_view():
 
 
 @cli.command()
-def interactive():
-    if not validate_config():
-        return
+@click.option('--new', is_flag=True, default=False, help='start & join a new game')
+def interactive(new):
+    if not new:
+        if not validate_config():
+            return
+
+    if new:
+        if config.playerid == "":
+            print('playerid cannot be empty')
+
+        config.gameid = c.post('game/new', {
+            "name": ''.join(random.choice(string.ascii_lowercase) for _ in range(5))
+        })["uuid"]
+        c.post('game/join', {
+            "game_id": config.gameid,
+            "player_id": config.playerid
+        })
+        c.put(f'game/start/{config.gameid}', {})
+
     runapp()
 
 
