@@ -261,6 +261,13 @@ def player_view():
         player_buffer.text += f'health: {player["health"]}\n'
         player_buffer.text += f'position: x={player["position"]["x"]},y={player["position"]["y"]}\n'
         player_buffer.text += f'actions: {player["action_count"]}\n'
+
+        if player["buffs"] is not None:
+            player_buffer.text += f'buffs: {len(player["buffs"])} '
+            for buff in player["buffs"]:
+                player_buffer.text += f'[{powerup_types[buff]}]'
+            player_buffer.text += '\n'
+
         if player["powerups"] is not None:
             player_buffer.text += f'powerups: {len(player["powerups"])}\n'
             for powerup in player["powerups"]:
