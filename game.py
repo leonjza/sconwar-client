@@ -275,10 +275,16 @@ def player_view():
         player_buffer.text += f'alive creep={game["game_entities"]["alive_creep"]} ' \
                               f'players={game["game_entities"]["alive_players"]} ' \
                               f'powerups={game["game_entities"]["powerups"]}\n'
-        if config.playerid == game["current_player"]:
-            player_buffer.text += f'game curr player: IT IS OUR ROUND!\n'
-        else:
-            player_buffer.text += f'game curr player: {game["current_player"]}\n'
+
+        if game["status"] == 1:
+            if config.playerid == game["current_player"]:
+                player_buffer.text += f'game curr player: IT IS OUR ROUND!\n'
+            else:
+                player_buffer.text += f'game curr player: {game["current_player"]}\n'
+        elif game["status"] == 0:
+            player_buffer.text += f'game is waiting to start'
+        elif game["status"] == 2:
+            player_buffer.text += f'\ngame is finished!'
         time.sleep(1)
 
 
