@@ -230,7 +230,7 @@ def board_view():
 
         if surroundings["players"] is not None:
             for player in surroundings["players"]:
-                board.add_entity(Entities.Player,
+                board.add_entity(Entities.OtherPlayer,
                                  player["position"]["x"], player["position"]["y"])
 
         if surroundings["powerups"] is not None:
