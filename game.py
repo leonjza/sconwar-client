@@ -257,7 +257,10 @@ def player_view():
 
         game = c.get(f'game/info/{config.gameid}')
 
-        player_buffer.text = f'{player["name"]} health: ({player["health"]}/100)\n'
+        player_buffer.text = f'{player["name"]} health: ({player["health"]}/100) | score: ' \
+                             f'{player["score"]} ck: {player["killed_creep"]} pk: {player["killed_players"]} ' \
+                             f'dd: {player["damage_dealt"]} dt: {player["damage_taken"]}\n'
+        player_buffer.text += f'gameid: {config.gameid}\n'
         player_buffer.text += f'queued actions: {player["action_count"]}/2 position: x={player["position"]["x"]},y={player["position"]["y"]}\n'
 
         if player["buffs"] is not None:
