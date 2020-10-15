@@ -175,7 +175,7 @@ def _(event):
 
 
 # flag used to knw if we have called ^s already
-started = False
+game_finished = False
 
 
 @kb.add("c-r", eager=True)
@@ -280,10 +280,7 @@ def player_view():
                               f'powerups={game["game_entities"]["powerups"]}\n'
 
         if game["status"] == 1:
-            if config.playerid == game["current_player"]:
-                player_buffer.text += f'game curr player: IT IS OUR ROUND!\n'
-            else:
-                player_buffer.text += f'game curr player: {game["current_player"]}\n'
+            player_buffer.text += f'game curr player: {game["current_player"]}\n'
         elif game["status"] == 0:
             player_buffer.text += f'game is waiting to start'
         elif game["status"] == 2:

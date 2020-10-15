@@ -162,6 +162,7 @@ def interactive(new):
             "game_id": config.gameid,
             "player_id": config.playerid
         })
+
         c.put(f'game/start/{config.gameid}', {})
 
     runapp()
